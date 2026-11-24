@@ -133,9 +133,19 @@ const productSchema = new mongoose.Schema(
   {
     timestamps: true,
     toJSON: {
-      transform: function (doc, ret) {
-        // Enforce removal of buyingPrice if it was ever loaded accidentally
-        delete ret.buyingPrice;
+      transform: function (doc, ret, options) {
+        // Only keep buyingPrice if explicitly allowed in admin serialization options
+        if (!options || !options.includeBuyingPrice) {
+          delete ret.buyingPrice;
+        }
+        return ret;
+      },
+    },
+    toObject: {
+      transform: function (doc, ret, options) {
+        if (!options || !options.includeBuyingPrice) {
+          delete ret.buyingPrice;
+        }
         return ret;
       },
     },
